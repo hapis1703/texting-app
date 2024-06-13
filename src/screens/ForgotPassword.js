@@ -1,0 +1,171 @@
+import {
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  TouchableOpacity,
+  TextInput,
+} from 'react-native';
+import React, {useState} from 'react';
+import auth from '@react-native-firebase/auth';
+import Toast from 'react-native-simple-toast';
+
+const ForgotPassword = ({navigation}) => {
+  const [email, setEmail] = useState('');
+  const handleResetPassword = async () => {
+    if (email === '') {
+      Toast.show('Please input your Email', 2000);
+    } else {
+      await auth()
+        .sendPasswordResetEmail(email)
+        .then(() => {
+          Toast.show('Check your email to confirm reset password!');
+          setEmail('');
+          navigation.navigate('Login');
+        })
+        .catch(error => {
+          if (error.code === 'auth/invalid-email') {
+            Toast.show('Invalid email', 2000);
+          } else if (error.code === 'auth/user-not-found') {
+            Toast.show('User Not Found', 2000);
+          } else {
+            Toast.show('Something went wrong', 2000);
+          }
+        });
+    }
+  };
+  return (
+    <ScrollView contentContainerStyle={styles.scroll}>
+      <View style={styles.viewContainer}>
+        <Text style={styles.judulScreen}>RESET PASSWORD</Text>
+        <View style={styles.mainContainer}>
+          <View style={styles.formContainer}>
+            <View style={styles.singleForm}>
+              <Text style={styles.subjectForm}>Email</Text>
+              <TextInput
+                style={styles.formInput}
+                placeholder="    Input your email"
+                placeholderTextColor="black"
+                value={email}
+                onChangeText={text => setEmail(text)}
+              />
+            </View>
+          </View>
+          <View style={styles.ActionCenter}>
+            <TouchableOpacity
+              style={styles.RegButton}
+              onPress={() => handleResetPassword()}>
+              <Text style={styles.TextButton}>Send Confirmation</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </ScrollView>
+  );
+};
+
+export default ForgotPassword;
+
+const styles = StyleSheet.create({
+  scroll: {
+    flexGrow: 1,
+  },
+  viewContainer: {
+    flex: 1,
+    backgroundColor: '#005418',
+    alignItems: 'center',
+  },
+  judulScreen: {
+    fontSize: 60,
+    fontFamily: '',
+    fontWeight: 'bold',
+    flex: 1,
+    marginTop: 50,
+    marginBottom: 30,
+    color: 'white',
+    textAlign: 'center',
+  },
+  mainContainer: {
+    width: '100%',
+    backgroundColor: 'white',
+    flex: 10,
+    borderTopLeftRadius: 40,
+    borderTopRightRadius: 40,
+  },
+  formContainer: {
+    alignItems: 'left',
+    marginTop: 50,
+    marginLeft: 15,
+    marginRight: 15,
+  },
+  subjectForm: {
+    color: 'black',
+    marginLeft: 20,
+    fontWeight: 'bold',
+    fontSize: 15,
+  },
+  formInput: {
+    width: '100%',
+    backgroundColor: '#CCCCCC',
+    borderRadius: 40,
+    color: 'black',
+    marginTop: 6,
+  },
+  singleForm: {
+    marginBottom: 20,
+  },
+  ActionCenter: {
+    alignItems: 'center',
+    width: '100%',
+    marginBottom: 10,
+  },
+  RegButton: {
+    width: '80%',
+    backgroundColor: '#00AD11',
+    padding: 18,
+    alignItems: 'center',
+    borderRadius: 100,
+    marginTop: 10,
+  },
+  TextButton: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 17,
+  },
+  navigationCenter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '80%',
+    marginTop: 10,
+    justifyContent: 'center',
+  },
+  normalText: {
+    color: 'black',
+    fontWeight: 'bold',
+    fontSize: 15,
+    textAlign: 'center',
+  },
+  navigateText: {
+    color: '#03A400',
+    fontWeight: 'bold',
+    fontSize: 15,
+    textAlign: 'center',
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  iconContainer: {
+    padding: 0,
+    position: 'absolute',
+    right: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+    bottom: 12,
+  },
+  passwordHead: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+});
