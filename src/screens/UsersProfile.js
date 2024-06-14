@@ -9,10 +9,24 @@ import {
 import React, {useEffect, useState} from 'react';
 import database from '@react-native-firebase/database';
 
+/**
+ * UsersProfile component
+ *
+ * Displays the profile of a user with their username and info.
+ *
+ * @param {Object} route - The route object containing the user's uid.
+ * @returns {React.Component} A component displaying the user's profile.
+ */
 const UsersProfile = ({route}) => {
+  // Get the user's uid from the route params
   const uid = route.params.uid;
+  // Store the user's data in state
   const [user, setUser] = useState({});
 
+  /**
+   * Fetches the user's data from Firebase
+   * Sets the user's data in state
+   */
   const getUser = async () => {
     await database()
       .ref(`users/${uid}`)
@@ -22,11 +36,14 @@ const UsersProfile = ({route}) => {
       });
   };
 
+  // Fetch the user's data when the component mounts
   useEffect(() => {
     getUser();
   });
+
   return (
     <ScrollView contentContainerStyle={styles.scroll}>
+      {/* Display the user's profile */}
       <View style={styles.viewContainer}>
         <View style={styles.mainInfo}>
           <Image
@@ -40,6 +57,7 @@ const UsersProfile = ({route}) => {
         </View>
         <View style={styles.mainContainer}>
           <View style={styles.formContainer}>
+            {/* Display the user's username */}
             <View style={styles.singleForm}>
               <Text style={styles.subjectForm}>Username</Text>
               <TextInput
@@ -49,6 +67,7 @@ const UsersProfile = ({route}) => {
                 multiline={false}
               />
             </View>
+            {/* Display the user's info */}
             <View style={styles.singleForm}>
               <Text style={styles.subjectForm}>Info</Text>
               <TextInput

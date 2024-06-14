@@ -30,25 +30,30 @@ const ForgotPassword = ({navigation}) => {
   /**
    * handleResetPassword: function
    *
-   * Function to handle the password reset process.
-   * It checks if the email field is empty and displays a toast message if it is.
+   * Handles the password reset process.
+   * Checks if the email field is empty and displays a toast message if it is.
    * If the email field is not empty, it sends a password reset email to the user's email address.
    * If the email is not valid, it displays a toast message indicating the error.
    * If the email is valid, it displays a toast message indicating the success of the password reset request.
    * It then navigates the user back to the login screen.
    */
   const handleResetPassword = async () => {
+    // Check if email field is empty and display a toast message if it is
     if (email === '') {
       Toast.show('Please input your Email', 2000);
     } else {
+      // Send password reset email to the user's email address
       await auth()
         .sendPasswordResetEmail(email)
         .then(() => {
+          // Display success message and reset email field
           Toast.show('Check your email to confirm reset password!');
           setEmail('');
+          // Navigate back to the login screen
           navigation.navigate('Login');
         })
         .catch(error => {
+          // Display error message based on the Firebase error code
           if (error.code === 'auth/invalid-email') {
             Toast.show('Invalid email', 2000);
           } else if (error.code === 'auth/user-not-found') {
@@ -68,6 +73,7 @@ const ForgotPassword = ({navigation}) => {
           <View style={styles.formContainer}>
             <View style={styles.singleForm}>
               <Text style={styles.subjectForm}>Email</Text>
+              {/* Input field for email */}
               <TextInput
                 style={styles.formInput}
                 placeholder="    Input your email"
@@ -79,6 +85,7 @@ const ForgotPassword = ({navigation}) => {
             </View>
           </View>
           <View style={styles.ActionCenter}>
+            {/* Button to submit the email for password reset */}
             <TouchableOpacity
               style={styles.RegButton}
               onPress={() => handleResetPassword()}>

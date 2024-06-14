@@ -99,6 +99,7 @@ const HomeScreen = ({navigation}) => {
       });
   }, []);
 
+  // Render the list of chats and add button to navigate to search screen
   return (
     <View style={styles.mainContainer}>
       {/* Display list of chats */}
@@ -112,24 +113,22 @@ const HomeScreen = ({navigation}) => {
             You haven't chat with anyone yet
           </Text>
         }
-        renderItem={({item}) => {
-          return (
-            <ChatBox
-              name={item.usernameId}
-              onPress={() => navigation.navigate('Chat', {item})}
-              avatar={
-                item.photoURL
-                  ? {uri: item.photoURL}
-                  : require('../../assets/images/profile.png')
-              }
-              isHome={true}
-              message={item.lastMsg}
-              onLongPress={() =>
-                navigation.navigate('UserProfile', {uid: item.uid})
-              }
-            />
-          );
-        }}
+        renderItem={({item}) => (
+          <ChatBox
+            name={item.usernameId}
+            onPress={() => navigation.navigate('Chat', {item})}
+            avatar={
+              item.photoURL
+                ? {uri: item.photoURL}
+                : require('../../assets/images/profile.png')
+            }
+            isHome={true}
+            message={item.lastMsg}
+            onLongPress={() =>
+              navigation.navigate('UserProfile', {uid: item.uid})
+            }
+          />
+        )}
       />
 
       {/* Add button to navigate to search screen */}

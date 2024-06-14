@@ -52,20 +52,27 @@ const LoginScreen = ({navigation}) => {
         })
         .catch(error => {
           // Display error message based on the Firebase error code
-          if (error.code === 'auth/user-not-found') {
-            Toast.show('User not found', Toast.SHORT);
-          } else if (error.code === 'auth/user-disabled') {
-            Toast.show('User is disabled', Toast.SHORT);
-          } else if (error.code === 'auth/email-already-in-use') {
-            Toast.show('Email already in use', Toast.SHORT);
-          } else if (error.code === 'auth/wrong-password') {
-            Toast.show('Wrong Password', Toast.SHORT);
-          } else if (error.code === 'auth/invalid-email') {
-            Toast.show('Invalid Email', Toast.SHORT);
-          } else if (error.code === 'auth/invalid-credential') {
-            Toast.show('Invalid Credential', Toast.SHORT);
-          } else {
-            Toast.show('Something went wrong', Toast.SHORT);
+          switch (error.code) {
+            case 'auth/user-not-found':
+              Toast.show('User not found', Toast.SHORT);
+              break;
+            case 'auth/user-disabled':
+              Toast.show('User is disabled', Toast.SHORT);
+              break;
+            case 'auth/email-already-in-use':
+              Toast.show('Email already in use', Toast.SHORT);
+              break;
+            case 'auth/wrong-password':
+              Toast.show('Wrong Password', Toast.SHORT);
+              break;
+            case 'auth/invalid-email':
+              Toast.show('Invalid Email', Toast.SHORT);
+              break;
+            case 'auth/invalid-credential':
+              Toast.show('Invalid Credential', Toast.SHORT);
+              break;
+            default:
+              Toast.show('Something went wrong', Toast.SHORT);
           }
         });
     }
@@ -82,14 +89,18 @@ const LoginScreen = ({navigation}) => {
       }
     });
     return unsubscribe;
-  });
+  }, [dispatch]);
 
   return (
+    // Scrollable container
     <ScrollView contentContainerStyle={styles.scroll}>
       <View style={styles.viewContainer}>
         <Text style={styles.judulScreen}>LOGIN</Text>
+        {/* Main container */}
         <View style={styles.mainContainer}>
+          {/* Form container */}
           <View style={styles.formContainer}>
+            {/* Email input */}
             <View style={styles.singleForm}>
               <Text style={styles.subjectForm}>Email</Text>
               <TextInput
@@ -101,6 +112,7 @@ const LoginScreen = ({navigation}) => {
                 keyboardType="email-address"
               />
             </View>
+            {/* Password input */}
             <View style={styles.singleForm}>
               <View style={styles.passwordHead}>
                 <Text style={styles.subjectForm}>Password</Text>
@@ -132,12 +144,14 @@ const LoginScreen = ({navigation}) => {
               </View>
             </View>
           </View>
+          {/* Action center */}
           <View style={styles.ActionCenter}>
             <TouchableOpacity
               style={styles.RegButton}
               onPress={() => handleSignIn()}>
               <Text style={styles.TextButton}>LOGIN</Text>
             </TouchableOpacity>
+            {/* Navigation center */}
             <View style={styles.navigationCenter}>
               <Text style={styles.normalText}>Don't have an account? </Text>
               <TouchableOpacity onPress={() => navigation.navigate('Register')}>

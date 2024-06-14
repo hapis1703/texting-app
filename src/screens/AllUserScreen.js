@@ -62,7 +62,9 @@ const AllUserScreen = ({navigation}) => {
   }, []);
 
   return (
+    // The main container
     <View style={styles.mainContainer}>
+      {/* The list of users */}
       <FlatList
         data={allUser} // The data to display in the list
         keyExtractor={item => item.uid} // The key for each item
@@ -70,13 +72,15 @@ const AllUserScreen = ({navigation}) => {
         ListHeaderComponent={
           // Render the search box as a ListHeaderComponent
           <View style={styles.searchBox}>
+            {/* The search icon */}
             <Icon
-              name="search" // The name of the icon
-              type="font-awesome" // The type of the icon
-              size={18} // The size of the icon
+              name="search"
+              type="font-awesome"
+              size={18}
               style={styles.searchIcon}
-              color="black" // The color of the icon
+              color="black"
             />
+            {/* The search input */}
             <TextInput
               placeholder="Search User" // The placeholder text
               style={styles.searchInput}

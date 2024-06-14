@@ -26,8 +26,11 @@ const ChatScreen = ({navigation, route}) => {
   // Set header title and back button on mount
   useEffect(() => {
     navigation.setOptions({
+      /**
+       * Component for the header left button
+       * @returns {React.Component} Back button
+       */
       headerLeft: () => (
-        // Back button component
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <TouchableOpacity onPress={() => navigation.navigate('Home')}>
             <View style={styles.iconContainer}>
@@ -57,11 +60,17 @@ const ChatScreen = ({navigation, route}) => {
           </TouchableOpacity>
         </View>
       ),
-      headerTitle: notMeUser.usernameId, // Title of the header
+      /**
+       * Title of the header
+       */
+      headerTitle: notMeUser.usernameId,
     });
   }, []);
 
   // Get messages from Firebase
+  /**
+   * Get messages from Firebase and update state
+   */
   const getMessage = () => {
     // Get messages from Firebase
     database()
@@ -85,6 +94,10 @@ const ChatScreen = ({navigation, route}) => {
   }, []);
 
   // Send message to Firebase
+  /**
+   * Send message to Firebase
+   * @param {Array} messages Array of messages to send
+   */
   const sendMessage = useCallback((messages = []) => {
     // Push new message to Firebase
 
