@@ -13,11 +13,18 @@ import React from 'react';
  * @param {String} props.message - The message to be displayed in the chat box if it is rendered in the home screen.
  * @returns {React.Component} A component representing a chat box.
  */
-export const ChatBox = ({onPress, name, avatar, isHome, message}) => {
+export const ChatBox = ({
+  onPress,
+  name,
+  avatar,
+  isHome,
+  message,
+  onLongPress,
+}) => {
   // Render a chat box that displays the user's name and profile picture.
   return (
     // Wrap the chat box in a touchable opaque component to make it clickable.
-    <TouchableOpacity onPress={onPress}>
+    <TouchableOpacity onPress={onPress} onLongPress={onLongPress}>
       <View style={styles.chatBoxContainer}>
         {/* Render the user's profile picture. */}
         <Image source={avatar} style={styles.imagePP} />

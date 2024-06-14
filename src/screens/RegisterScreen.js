@@ -101,6 +101,7 @@ const RegisterScreen = ({navigation}) => {
             usernameId: username,
             uid: user.uid,
             photoURL: null,
+            info: "Hello, I'm using Messenger X",
           });
 
           /**
@@ -214,6 +215,7 @@ const RegisterScreen = ({navigation}) => {
                 placeholderTextColor="black"
                 value={email}
                 onChangeText={text => setEmail(text)}
+                keyboardType="email-address"
               />
             </View>
             <View style={styles.singleForm}>

@@ -33,12 +33,14 @@ const ProfileScreen = ({navigation}) => {
   const dispatch = useDispatch();
   // Current user from Firebase auth
   const user = auth().currentUser;
+  const [completeUser, setCompleteUser] = useState({});
+  const [completeUserB, setCompleteUserB] = useState({});
   // State to control visibility of logout button
   const [isLogOutVisible, setLogOutVisible] = useState(false);
   // State to control visibility of profile change button
-  const [isChangeProfile, setIsChangeProfile] = useState(false);
   const [isUserEdit, setIsUserEdit] = useState(false);
   const [newUsername, setNewUsername] = useState('');
+  const [editDesc, setEditDesc] = useState(false);
 
   // Set the header of the screen
   useEffect(() => {
@@ -71,6 +73,22 @@ const ProfileScreen = ({navigation}) => {
     return unsubscribe;
   });
 
+  useEffect(() => {
+    getUser();
+  }, []);
+
+  const getUser = async () => {
+    const userPublic = await database()
+      .ref(`users/${user.uid}`)
+      .once('value')
+      .then(snapshot => {
+        const value = snapshot.val();
+        setCompleteUser(value);
+        setCompleteUserB(value);
+      });
+    return userPublic;
+  };
+
   /**
    * Delete the profile photo from Firebase storage
    *
@@ -90,7 +108,6 @@ const ProfileScreen = ({navigation}) => {
    * @returns {Promise<void>} Promise that resolves when the photo is changed
    */
   const changePhoto = async () => {
-    setIsChangeProfile(true);
     await ImagePicker.openPicker({
       width: 400,
       height: 400,
@@ -112,7 +129,6 @@ const ProfileScreen = ({navigation}) => {
         photoURL: url,
       });
       Toast.show('Your profile has been updated');
-      setIsChangeProfile(false);
     });
   };
 
@@ -126,20 +142,34 @@ const ProfileScreen = ({navigation}) => {
     dispatch(userSignOut());
   };
 
+  const handleChangeDesc = async () => {
+    await database().ref(`users/${user.uid}`).update({
+      info: completeUser.info,
+    });
+    setCompleteUserB({...completeUserB, info: completeUser.info});
+    Toast.show('Your profile has been updated', 2000);
+  };
+
+  useEffect(() => {
+    if (completeUser.info !== completeUserB.info) {
+      setEditDesc(true);
+    } else {
+      setEditDesc(false);
+    }
+  });
+
   /**
    * Change the username of the user
    *
    * @returns {Promise<void>} Promise that resolves when the username is changed
    */
   const usernameChange = async () => {
-    setIsChangeProfile(true);
     await user.updateProfile({
       displayName: newUsername,
     });
     await database().ref(`users/${user.uid}`).update({
       usernameId: newUsername,
     });
-    setIsChangeProfile(false);
     setIsUserEdit(false);
     Toast.show('Your profile has been updated', Toast.LONG);
   };
@@ -151,8 +181,7 @@ const ProfileScreen = ({navigation}) => {
         {/* Image and Username container */}
         <View style={styles.imageAndUser}>
           {/* Profile image */}
-          <TouchableOpacity
-            onPress={() => (isChangeProfile ? null : changePhoto())}>
+          <TouchableOpacity onLongPress={() => changePhoto()}>
             <Image
               source={
                 user.photoURL
@@ -191,12 +220,39 @@ const ProfileScreen = ({navigation}) => {
               placeholderTextColor="black"
               value={`     ${user.email}`}
               editable={false}
+              multiline={false}
             />
           </View>
+          <View style={styles.singleForm}>
+            <Text style={styles.subjectForm}>Info</Text>
+            <TextInput
+              style={styles.wideInput}
+              placeholder="You don't have any info yet"
+              placeholderTextColor="grey"
+              value={completeUser.info}
+              onChangeText={text =>
+                setCompleteUser({...completeUser, info: text})
+              }
+              editable={true}
+              multiline={true}
+            />
+            <TouchableOpacity
+              style={[
+                styles.changeButton,
+                {
+                  display: editDesc ? 'flex' : 'none',
+                  pointerEvents: editDesc ? 'auto' : 'none',
+                },
+              ]}
+              onPress={() => handleChangeDesc()}>
+              <Text style={styles.changeButtonText}>Save Changes</Text>
+            </TouchableOpacity>
+          </View>
           {/* Logout button */}
+
           <TouchableOpacity
             style={styles.LogOutButton}
-            onPress={() => (isChangeProfile ? null : setLogOutVisible(true))}>
+            onPress={() => setLogOutVisible(true)}>
             <Text style={styles.TextLogButton}>Sign Out</Text>
           </TouchableOpacity>
         </View>
@@ -212,12 +268,12 @@ const ProfileScreen = ({navigation}) => {
             <View style={styles.modalView}>
               <Text style={styles.modalText}>Are you sure want to logout?</Text>
               <View style={styles.modalButton}>
-                <Button text="yes" onPress={() => LoggedOut()} />
                 <Button
                   text="no"
                   isLogout={true}
                   onPress={() => setLogOutVisible(false)}
                 />
+                <Button text="yes" onPress={() => LoggedOut()} />
               </View>
             </View>
           </View>
@@ -239,12 +295,12 @@ const ProfileScreen = ({navigation}) => {
                 onChangeText={text => setNewUsername(text)}
               />
               <View style={styles.modalButton}>
-                <Button text="Confirm" onPress={() => usernameChange()} />
                 <Button
                   text="cancel"
                   isLogout={true}
                   onPress={() => setIsUserEdit(false)}
                 />
+                <Button text="Confirm" onPress={() => usernameChange()} />
               </View>
             </View>
           </View>
@@ -306,6 +362,16 @@ const styles = StyleSheet.create({
     color: 'black',
     marginTop: 6,
   },
+  wideInput: {
+    height: 200,
+    width: '100%',
+    backgroundColor: '#CCCCCC',
+    borderRadius: 10,
+    color: 'black',
+    marginTop: 6,
+    textAlignVertical: 'top',
+    padding: 10,
+  },
   singleForm: {
     marginBottom: 20,
   },
@@ -321,6 +387,24 @@ const styles = StyleSheet.create({
   },
   TextLogButton: {
     color: 'black',
+    fontWeight: 'bold',
+  },
+  changeButton: {
+    backgroundColor: '#1f6a05',
+    height: 40,
+    width: '30%',
+    alignItems: 'center',
+    alignSelf: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderRadius: 20,
+    marginBottom: 10,
+    position: 'absolute',
+    right: 10,
+    bottom: 0,
+  },
+  changeButtonText: {
+    color: 'white',
     fontWeight: 'bold',
   },
   backgroundView: {

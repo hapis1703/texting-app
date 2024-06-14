@@ -98,6 +98,7 @@ const LoginScreen = ({navigation}) => {
                 placeholderTextColor="black"
                 value={email}
                 onChangeText={text => setEmail(text)}
+                keyboardType="email-address"
               />
             </View>
             <View style={styles.singleForm}>

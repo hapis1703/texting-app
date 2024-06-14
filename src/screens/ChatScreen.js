@@ -40,16 +40,21 @@ const ChatScreen = ({navigation, route}) => {
               />
             </View>
           </TouchableOpacity>
-          <Image
-            source={
-              notMeUser.photoURL
-                ? {uri: notMeUser.photoURL}
-                : require('../../assets/images/profile.png')
-            }
-            width={50}
-            height={50}
-            style={styles.pp}
-          />
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate('UserProfile', {uid: notMeUser.uid})
+            }>
+            <Image
+              source={
+                notMeUser.photoURL
+                  ? {uri: notMeUser.photoURL}
+                  : require('../../assets/images/profile.png')
+              }
+              width={50}
+              height={50}
+              style={styles.pp}
+            />
+          </TouchableOpacity>
         </View>
       ),
       headerTitle: notMeUser.usernameId, // Title of the header

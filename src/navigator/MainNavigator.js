@@ -9,6 +9,7 @@ import AllUserScreen from '../screens/AllUserScreen';
 import ChatScreen from '../screens/ChatScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import ForgotPassword from '../screens/ForgotPassword';
+import UsersProfile from '../screens/UsersProfile';
 
 /**
  * Main navigator component
@@ -30,6 +31,7 @@ const MainNavigator = () => {
       {isLogin ? (
         <Stack.Navigator initialRouteName="Home">
           {/* Home screen stack */}
+
           <Stack.Screen
             name="Home"
             component={HomeScreen}
@@ -74,6 +76,11 @@ const MainNavigator = () => {
               // Header title for the profile screen
               headerTitle: 'Profile',
             }}
+          />
+          <Stack.Screen
+            name="UserProfile"
+            component={UsersProfile}
+            options={{headerShown: false}}
           />
         </Stack.Navigator>
       ) : (

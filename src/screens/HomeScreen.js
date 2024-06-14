@@ -124,6 +124,9 @@ const HomeScreen = ({navigation}) => {
               }
               isHome={true}
               message={item.lastMsg}
+              onLongPress={() =>
+                navigation.navigate('UserProfile', {uid: item.uid})
+              }
             />
           );
         }}

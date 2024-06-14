@@ -97,6 +97,9 @@ const AllUserScreen = ({navigation}) => {
                   ? {uri: item.photoURL}
                   : require('../../assets/images/profile.png')
               }
+              onLongPress={() =>
+                navigation.navigate('UserProfile', {uid: item.uid})
+              }
             />
           );
         }}
