@@ -10,8 +10,33 @@ import React, {useState} from 'react';
 import auth from '@react-native-firebase/auth';
 import Toast from 'react-native-simple-toast';
 
+/**
+ * ForgotPassword component
+ *
+ * Displays a form for users to input their email address and submit it to request a password reset.
+ * When the user submits the form, it sends a password reset email to their email address if it is valid.
+ * It then navigates the user back to the login screen.
+ *
+ * @param {Object} navigation - The navigation object from react-navigation.
+ */
 const ForgotPassword = ({navigation}) => {
+  /**
+   * email: string
+   *
+   * The email address entered by the user.
+   */
   const [email, setEmail] = useState('');
+
+  /**
+   * handleResetPassword: function
+   *
+   * Function to handle the password reset process.
+   * It checks if the email field is empty and displays a toast message if it is.
+   * If the email field is not empty, it sends a password reset email to the user's email address.
+   * If the email is not valid, it displays a toast message indicating the error.
+   * If the email is valid, it displays a toast message indicating the success of the password reset request.
+   * It then navigates the user back to the login screen.
+   */
   const handleResetPassword = async () => {
     if (email === '') {
       Toast.show('Please input your Email', 2000);
@@ -34,6 +59,7 @@ const ForgotPassword = ({navigation}) => {
         });
     }
   };
+
   return (
     <ScrollView contentContainerStyle={styles.scroll}>
       <View style={styles.viewContainer}>
