@@ -190,6 +190,7 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   flatListContainer: {
-    flex: 1,
+    flexGrow: 1,
+    paddingBottom: 10,
   },
 });
