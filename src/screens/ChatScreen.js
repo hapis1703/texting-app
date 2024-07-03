@@ -5,13 +5,7 @@
 import {StyleSheet, View, TouchableOpacity, Image} from 'react-native';
 import React, {useCallback, useEffect, useState} from 'react';
 import {Icon} from 'react-native-elements';
-import {
-  Avatar,
-  Bubble,
-  Composer,
-  GiftedChat,
-  Send,
-} from 'react-native-gifted-chat';
+import {Bubble, Composer, GiftedChat, Send} from 'react-native-gifted-chat';
 import auth from '@react-native-firebase/auth';
 import database from '@react-native-firebase/database';
 
@@ -72,15 +66,6 @@ const ChatScreen = ({navigation, route}) => {
       headerTitle: notMeUser.usernameId,
     });
   }, []);
-
-  const getUsers = async (id, username, photo) => {
-    const data = await database().ref(`users/${id}`).once('value');
-    if (username === true) {
-      return data.usernameId;
-    } else if (photo === true) {
-      return data.photoURL;
-    }
-  };
 
   // Get messages from Firebase
   /**
