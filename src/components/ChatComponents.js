@@ -49,7 +49,7 @@ export const ChatBox = ({
  */
 export const Button = props => {
   // Destructure the props to get the text and isLogout properties.
-  const {text, isLogout} = props;
+  const {text, isLogout, isPending} = props;
 
   // Render a button with the provided text and background color.
   return (
@@ -57,7 +57,14 @@ export const Button = props => {
       {...props}
       style={[
         styles.button, // Apply the styles for the button.
-        {backgroundColor: isLogout ? '#F87B7B' : '#CAE3BB'}, // Set the background color based on the isLogout flag.
+        {
+          backgroundColor: isLogout
+            ? '#F87B7B'
+            : isPending
+            ? '#f4f06a'
+            : '#CAE3BB',
+          opacity: isPending ? 0.5 : 1,
+        }, // Set the background color based on the isLogout flag.
       ]}>
       <View>
         <View style={styles.textContainer}>

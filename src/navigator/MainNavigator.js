@@ -1,21 +1,28 @@
+/* eslint-disable react/no-unstable-nested-components */
 import React from 'react';
+import {StyleSheet, Text} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
-import LoginScreen from '../screens/LoginScreen';
-import RegisterScreen from '../screens/RegisterScreen';
-import HomeScreen from '../screens/HomeScreen';
+
 import {useSelector} from 'react-redux';
-import AllUserScreen from '../screens/AllUserScreen';
-import ChatScreen from '../screens/ChatScreen';
-import ProfileScreen from '../screens/ProfileScreen';
-import ForgotPassword from '../screens/ForgotPassword';
-import UsersProfile from '../screens/UsersProfile';
+import TabNavigator from './TabNavigator';
+import {
+  AllUserScreen,
+  ChatScreen,
+  ProfileScreen,
+  UsersProfile,
+  LoginScreen,
+  RegisterScreen,
+  ForgotPassword,
+  FriendRequest,
+  CreateGroup,
+} from '../screens';
 
 /**
  * Main navigator component
  * @returns {React.Component} React component for the main navigator
  */
-const MainNavigator = () => {
+const MainNavigator = ({navigation}) => {
   // Create a stack navigator
   const Stack = createStackNavigator();
   // Get the user's login status from the store
@@ -31,15 +38,17 @@ const MainNavigator = () => {
       {isLogin ? (
         <Stack.Navigator initialRouteName="Home">
           {/* Home screen stack */}
-
           <Stack.Screen
-            name="Home"
-            component={HomeScreen}
+            name="Tabs"
+            component={TabNavigator}
             options={{
               // Header style for the home screen
               headerStyle: {backgroundColor: '#005418', height: 70},
               // Hide the header title
               headerTitle: '',
+              headerLeft: () => (
+                <Text style={styles.headerText}>Messenger X</Text>
+              ),
             }}
           />
           {/* Search user screen stack */}
@@ -82,6 +91,16 @@ const MainNavigator = () => {
             component={UsersProfile}
             options={{headerShown: false}}
           />
+          <Stack.Screen
+            name="FriendReq"
+            component={FriendRequest}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen
+            name="CreateGroup"
+            component={CreateGroup}
+            options={{title: 'Create New Group'}}
+          />
         </Stack.Navigator>
       ) : (
         <Stack.Navigator initialRouteName="Login">
@@ -109,3 +128,12 @@ const MainNavigator = () => {
 };
 
 export default MainNavigator;
+
+const styles = StyleSheet.create({
+  headerText: {
+    color: 'white',
+    fontSize: 30,
+    fontWeight: 'bold',
+    margin: 10,
+  },
+});

@@ -1,7 +1,6 @@
 /* eslint-disable no-shadow */
 /* eslint-disable react-native/no-inline-styles */
-/* eslint-disable react/no-unstable-nested-components */
-/* eslint-disable react-hooks/exhaustive-deps */
+
 import {StyleSheet, Text, View, TouchableOpacity, FlatList} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {Icon} from 'react-native-elements';
@@ -45,22 +44,6 @@ const HomeScreen = ({navigation}) => {
   // Update header and get chat list on mount
   useEffect(() => {
     // Set header title and back button on mount
-    navigation.setOptions({
-      headerLeft: () => <Text style={styles.headerText}>Messenger X</Text>,
-      headerRight: () => (
-        <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
-          <View style={styles.iconContainer}>
-            <Icon
-              name="account"
-              type="material-community"
-              size={30}
-              color="#005418"
-              style={styles.iconHeader}
-            />
-          </View>
-        </TouchableOpacity>
-      ),
-    });
 
     // Get list of chats from Firebase
     getChatList();

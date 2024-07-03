@@ -181,7 +181,7 @@ const ProfileScreen = ({navigation}) => {
         {/* Image and Username container */}
         <View style={styles.imageAndUser}>
           {/* Profile image */}
-          <TouchableOpacity onLongPress={() => changePhoto()}>
+          <TouchableOpacity onPress={() => changePhoto()}>
             <Image
               source={
                 user.photoURL

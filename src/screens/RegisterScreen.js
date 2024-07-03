@@ -100,7 +100,6 @@ const RegisterScreen = ({navigation}) => {
           await database().ref(`/users/${user.uid}`).set({
             usernameId: username,
             uid: user.uid,
-            photoURL: null,
             info: "Hello, I'm using Messenger X",
           });
 

@@ -5,7 +5,13 @@
 import {StyleSheet, View, TouchableOpacity, Image} from 'react-native';
 import React, {useCallback, useEffect, useState} from 'react';
 import {Icon} from 'react-native-elements';
-import {Bubble, Composer, GiftedChat, Send} from 'react-native-gifted-chat';
+import {
+  Avatar,
+  Bubble,
+  Composer,
+  GiftedChat,
+  Send,
+} from 'react-native-gifted-chat';
 import auth from '@react-native-firebase/auth';
 import database from '@react-native-firebase/database';
 
@@ -67,25 +73,74 @@ const ChatScreen = ({navigation, route}) => {
     });
   }, []);
 
+  const getUsers = async (id, username, photo) => {
+    const data = await database().ref(`users/${id}`).once('value');
+    if (username === true) {
+      return data.usernameId;
+    } else if (photo === true) {
+      return data.photoURL;
+    }
+  };
+
   // Get messages from Firebase
   /**
    * Get messages from Firebase and update state
    */
-  const getMessage = () => {
-    // Get messages from Firebase
-    database()
-      .ref(`messages/${meUser.uid}/${notMeUser.uid}`)
-      .orderByChild('createdAt')
-      .on('value', snapshot => {
-        if (snapshot.val() !== null) {
-          // Sort messages by createdAt
-          setMessages(
-            Object.values(snapshot.val()).sort((a, b) => {
-              return b.createdAt - a.createdAt;
-            }),
-          );
-        }
-      });
+  const getMessage = async () => {
+    try {
+      await database()
+        .ref(`messages/${meUser.uid}/${notMeUser?.uid}`)
+        .on('value', async messageSnapshot => {
+          if (messageSnapshot.exists()) {
+            const data = messageSnapshot.val();
+            console.log(Object.values(messageSnapshot.val()));
+            if (data) {
+              const formatMessages = Object.values(data).map(item => {
+                // const forEachId = Object.values(data).forEach(item2 => {
+                //   const user = database()
+                //     .ref(`users/${item2.userId}`)
+                //     .once('value');
+                //   return user;
+                // });
+                return {
+                  _id: item.id,
+                  text: item.text,
+                  createdAt: item.time,
+                  user: {
+                    _id: item.userId,
+                  },
+                };
+              });
+              const sortMessage = formatMessages.sort((a, b) => {
+                return b.createdAt - a.createdAt;
+              });
+              setMessages(sortMessage);
+            }
+          }
+        });
+    } catch (err) {
+      console.error(err);
+    }
+
+    // if (messageSnapshot.exists()) {
+    //   const data = snapshot.val();
+    //   const formatMessages = Object.values(data).map(item => {
+    //     return {
+    //       _id: item.id,
+    //       text: item.text,
+    //       createdAt: item.time,
+    //       user: {
+    //         _id: item.userId,
+    //         name: otherUser?.usernameId,
+    //         avatar: otherUser?.photoURL,
+    //       },
+    //     };
+    //   });
+    //   const sortedMessages = formatMessages.sort((a, b) => {
+    //     return b.createdAt - a.createdAt;
+    //   });
+    //   setMessages(sortedMessages);
+    // }
   };
 
   // Get messages from Firebase on mount
@@ -109,20 +164,16 @@ const ChatScreen = ({navigation, route}) => {
       .ref(`messages/${notMeUser.uid}/${meUser.uid}`)
       .push();
     newRef1.set({
-      _id: newRef1.key,
+      id: newRef1.key,
       text: messages[0].text,
-      createdAt: new Date().getTime(),
-      user: {
-        _id: meUser.uid,
-      },
+      time: new Date().getTime(),
+      userId: meUser.uid,
     });
     newRef2.set({
-      _id: newRef2.key,
+      id: newRef2.key,
       text: messages[0].text,
-      createdAt: new Date().getTime(),
-      user: {
-        _id: meUser.uid,
-      },
+      time: new Date().getTime(),
+      userId: meUser.uid,
     });
 
     // Update chatlist in Firebase
@@ -161,10 +212,9 @@ const ChatScreen = ({navigation, route}) => {
             }}
           />
         )}
-        user={{_id: meUser.uid, name: meUser.displayName}} // User object of the current user
-        showAvatarForEveryMessage={false}
-        renderAvatar={null} // Function to render avatar
+        user={{_id: meUser.uid, name: meUser.displayName}} // User object of the current user // Function to render avatar
         alwaysShowSend={true} // Always show send button
+        renderAvatar={null}
         renderSend={props => {
           return (
             <Send
