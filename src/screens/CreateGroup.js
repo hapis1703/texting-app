@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unstable-nested-components */
 import {
   FlatList,
   StyleSheet,
@@ -13,11 +14,17 @@ import auth from '@react-native-firebase/auth';
 import {Button, ChatBox} from '../components/ChatComponents';
 import uuid from 'react-native-uuid';
 import Toast from 'react-native-simple-toast';
+import ImagePicker from 'react-native-image-crop-picker';
+import storage from '@react-native-firebase/storage';
+import {Icon} from 'react-native-elements';
 
 const CreateGroup = ({navigation}) => {
   const myId = auth().currentUser.uid;
   const [name, setName] = useState('');
   const [friendList, setFriendList] = useState([]);
+  const [photo, setPhoto] = useState({});
+  const [photoLink, setPhotoLink] = useState('');
+  const [disabled, setDisabled] = useState(false);
 
   const selectedUser = (id, selected) => {
     const newSelected = friendList.map(item => {
@@ -30,46 +37,105 @@ const CreateGroup = ({navigation}) => {
     console.log(newSelected);
   };
 
-  const creatingGroup = () => {
+  const uploadPhoto = async () => {
+    try {
+      const image = await ImagePicker.openPicker({
+        width: 400,
+        height: 400,
+        cropping: true,
+      });
+      setPhoto(image);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const uploadPhotoToStorage = async (photo, groupId) => {
+    const imgName = photo.path.substring(photo.path.lastIndexOf('/') + 1);
+    const ext = imgName.split('.').pop();
+    const name = imgName.split('.')[0];
+    const newName = `${name}${groupId}.${ext}`;
+    const ref = storage().ref(`groups/${groupId}/${newName}`);
+
+    await ref.putFile(photo.path);
+    const url = await ref.getDownloadURL();
+    return url;
+  };
+
+  const creatingGroup = async () => {
     const groupId = uuid.v4();
     const selectedUsers = friendList.filter(item => item.selected === true);
+
     if (selectedUsers.length <= 0) {
       Toast.show('Please select at least one user');
-    } else if (name === '') {
+      return;
+    }
+
+    if (name === '') {
       Toast.show('Please enter group name');
-    } else {
-      database().ref(`groups/${groupId}`).set({
+      return;
+    }
+
+    try {
+      Toast.show('Please wait until the process is done', 2000);
+      let photoURL = '';
+      if (photo.path) {
+        photoURL = await uploadPhotoToStorage(photo, groupId);
+      }
+
+      await database().ref(`groups/${groupId}`).set({
         name: name,
         uid: groupId,
+        photo: photoURL,
       });
+
+      const updates = {};
       selectedUsers.forEach(user => {
         const userId = user.uid;
-        database().ref(`groups/${groupId}/members/${userId}`).update({
+        updates[`groups/${groupId}/members/${userId}`] = {
           uid: userId,
           accepted: false,
-        });
-        database().ref(`groups/${groupId}/members/${myId}`).update({
-          uid: myId,
-          accepted: true,
-        });
-        database().ref(`users/${userId}/groups/${groupId}`).update({
+        };
+        updates[`users/${userId}/groups/${groupId}`] = {
           uid: groupId,
           accepted: false,
-        });
-        database().ref(`users/${myId}/groups/${groupId}`).update({
-          uid: groupId,
-          accepted: true,
-        });
-        database().ref(`chatlist/${myId}/${groupId}`).update({
-          isGroup: true,
-          time: new Date().getTime(),
-          uid: groupId,
-        });
+        };
       });
+
+      updates[`groups/${groupId}/members/${myId}`] = {
+        uid: myId,
+        accepted: true,
+      };
+      updates[`users/${myId}/groups/${groupId}`] = {
+        uid: groupId,
+        accepted: true,
+      };
+      updates[`chatlist/${myId}/${groupId}`] = {
+        isGroup: true,
+        time: new Date().getTime(),
+        uid: groupId,
+      };
+
+      await database().ref().update(updates);
 
       Toast.show('Group created successfully');
       navigation.navigate('Friends');
+    } catch (error) {
+      console.error(error);
+      Toast.show('Error creating group. Please try again.');
     }
+  };
+
+  const exitScreen = () => {
+    ImagePicker.clean()
+      .then(() => {
+        console.log('Removed all tmp images from tmp directory');
+      })
+      .catch(e => {
+        console.error(e);
+      });
+
+    navigation.navigate('Friends');
   };
 
   useEffect(() => {
@@ -110,6 +176,30 @@ const CreateGroup = ({navigation}) => {
 
     fetchFriends();
   }, [myId]);
+
+  const buttonPress = () => {
+    setDisabled(true);
+    creatingGroup();
+  };
+
+  useEffect(() => {
+    // Set the header of the screen
+    navigation.setOptions({
+      headerLeft: () => (
+        <TouchableOpacity onPress={() => exitScreen()}>
+          <View style={styles.iconContainer}>
+            <Icon
+              name="arrowleft"
+              type="antdesign"
+              size={20}
+              color="white"
+              style={styles.iconHeader}
+            />
+          </View>
+        </TouchableOpacity>
+      ),
+    });
+  });
   // Include myId in the dependency array if it might change
   return (
     <View style={styles.mainContainer}>
@@ -117,11 +207,17 @@ const CreateGroup = ({navigation}) => {
         <View style={styles.imageContainer}>
           <View style={styles.imageView}>
             <Image
-              source={require('../../assets/images/group.png')}
+              source={
+                photo && photo.path
+                  ? {uri: photo.path}
+                  : require('../../assets/images/group.png')
+              }
               style={styles.image}
             />
           </View>
-          <TouchableOpacity style={styles.editPButton}>
+          <TouchableOpacity
+            style={styles.editPButton}
+            onPress={() => uploadPhoto()}>
             <Text style={styles.editPhoto}>Edit Photo</Text>
           </TouchableOpacity>
         </View>
@@ -160,7 +256,11 @@ const CreateGroup = ({navigation}) => {
           }}
         />
         <View style={styles.forButton}>
-          <Button text="create group" onPress={() => creatingGroup()} />
+          <Button
+            text="create group"
+            onPress={() => buttonPress()}
+            disabled={disabled}
+          />
         </View>
       </View>
     </View>
@@ -239,5 +339,14 @@ const styles = StyleSheet.create({
   },
   forButton: {
     alignItems: 'center',
+  },
+  iconContainer: {
+    backgroundColor: '#005418',
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 15,
+    margin: 10,
   },
 });

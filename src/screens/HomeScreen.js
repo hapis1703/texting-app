@@ -61,14 +61,16 @@ const HomeScreen = ({navigation}) => {
 
   // Optimize homescreen
   useEffect(() => {
-    const newChatList = list.map(item => {
-      const user = allUser.find(user => user.uid === item.uid);
-      return {
-        ...item,
-        photoURL: user ? user.photoURL || '' : '',
-        usernameId: user ? user.usernameId || '' : '',
-      };
-    });
+    const newChatList = list
+      .filter(item => !item.isGroup)
+      .map(item => {
+        const user = allUser.find(user => user.uid === item.uid);
+        return {
+          ...item,
+          photoURL: user ? user.photoURL || '' : '',
+          usernameId: user ? user.usernameId || '' : '',
+        };
+      });
     newChatList.sort((a, b) => b.time - a.time);
     setChatList(newChatList);
   }, [list, allUser]);

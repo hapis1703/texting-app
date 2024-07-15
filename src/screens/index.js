@@ -9,6 +9,10 @@ import RegisterScreen from './RegisterScreen';
 import UsersProfile from './UsersProfile';
 import FriendRequest from './FriendRequest';
 import CreateGroup from './CreateGroup';
+import GroupScreen from './GroupScreen';
+import GroupChat from './GroupChat';
+import PendingGroups from './PendingGroups';
+import GroupInfo from './GroupInfo';
 
 export {
   AllUserScreen,
@@ -22,4 +26,8 @@ export {
   UsersProfile,
   FriendRequest,
   CreateGroup,
+  GroupScreen,
+  GroupChat,
+  PendingGroups,
+  GroupInfo,
 };

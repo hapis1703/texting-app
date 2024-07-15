@@ -16,6 +16,9 @@ import {
   ForgotPassword,
   FriendRequest,
   CreateGroup,
+  GroupChat,
+  PendingGroups,
+  GroupInfo,
 } from '../screens';
 
 /**
@@ -100,6 +103,30 @@ const MainNavigator = ({navigation}) => {
             name="CreateGroup"
             component={CreateGroup}
             options={{title: 'Create New Group'}}
+          />
+          <Stack.Screen
+            name="GroupChat"
+            component={GroupChat}
+            options={{
+              // Header style for the chat screen
+              headerStyle: {backgroundColor: '#005418', height: 70},
+              // Header title style for the chat screen
+              headerTitleStyle: {
+                color: 'white',
+                fontSize: 30,
+                fontWeight: 'bold',
+              },
+            }}
+          />
+          <Stack.Screen
+            name="PendingGroup"
+            component={PendingGroups}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen
+            name="GroupInfo"
+            component={GroupInfo}
+            options={{headerShown: false}}
           />
         </Stack.Navigator>
       ) : (

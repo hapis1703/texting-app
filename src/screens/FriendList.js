@@ -156,7 +156,9 @@ const FriendList = ({navigation}) => {
             </View>
             <Text style={styles.groupText}>Create New Group</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.groupMain}>
+          <TouchableOpacity
+            style={styles.groupMain}
+            onPress={() => navigation.navigate('PendingGroup')}>
             <View style={styles.groupIcons}>
               <View style={styles.groupIcon}>
                 <Icon
@@ -199,31 +201,27 @@ const FriendList = ({navigation}) => {
             </View>
             <Text style={styles.groupText}>Friend Requests</Text>
           </TouchableOpacity>
-          <FlatList
-            data={friends}
-            keyExtractor={item => item.uid}
-            showsVerticalScrollIndicator={false}
-            renderItem={({item}) => {
-              return (
-                <TouchableOpacity
-                  style={styles.groupMain}
-                  onPress={() => navigation.navigate('Chat', {item})}
-                  onLongPress={() =>
-                    navigation.navigate('UserProfile', {uid: item.uid})
-                  }>
-                  <Image
-                    source={
-                      item.photoURL
-                        ? {uri: item.photoURL}
-                        : require('../../assets/images/profile.png')
-                    }
-                    style={styles.pp}
-                  />
-                  <Text style={styles.groupText}>{item.usernameId}</Text>
-                </TouchableOpacity>
-              );
-            }}
-          />
+          {friends.map(item => {
+            return (
+              <TouchableOpacity
+                key={item.uid}
+                style={styles.groupMain}
+                onPress={() => navigation.navigate('Chat', {item})}
+                onLongPress={() =>
+                  navigation.navigate('UserProfile', {uid: item.uid})
+                }>
+                <Image
+                  source={
+                    item.photoURL
+                      ? {uri: item.photoURL}
+                      : require('../../assets/images/profile.png')
+                  }
+                  style={styles.pp}
+                />
+                <Text style={styles.groupText}>{item.usernameId}</Text>
+              </TouchableOpacity>
+            );
+          })}
         </View>
         <Modal
           animationType="slide"

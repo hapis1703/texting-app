@@ -20,11 +20,17 @@ export const ChatBox = ({
   isHome,
   message,
   onLongPress,
+  pending,
+  disabled,
 }) => {
   // Render a chat box that displays the user's name and profile picture.
   return (
     // Wrap the chat box in a touchable opaque component to make it clickable.
-    <TouchableOpacity onPress={onPress} onLongPress={onLongPress}>
+    <TouchableOpacity
+      onPress={onPress}
+      onLongPress={onLongPress}
+      disabled={disabled}
+      style={{opacity: pending ? 0.3 : 1}}>
       <View style={styles.chatBoxContainer}>
         {/* Render the user's profile picture. */}
         <Image source={avatar} style={styles.imagePP} />

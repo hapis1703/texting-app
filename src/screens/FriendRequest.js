@@ -64,7 +64,7 @@ const FriendRequest = ({navigation}) => {
     const selectedUsers = reqUserB.filter(item => {
       return item.selected === true;
     });
-    if (selectedUsers) {
+    if (selectedUsers.length > 0) {
       selectedUsers.forEach(user => {
         const userId = user.uid;
         database().ref(`users/${userId}/friends/${myId}`).update({
@@ -90,7 +90,7 @@ const FriendRequest = ({navigation}) => {
     const selectedUsers = reqUserB.filter(item => {
       return item.selected === true;
     });
-    if (selectedUsers) {
+    if (selectedUsers.length > 0) {
       selectedUsers.forEach(user => {
         const userId = user.uid;
         database().ref(`users/${userId}/friends/${myId}`).remove();

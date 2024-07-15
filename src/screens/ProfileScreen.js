@@ -129,6 +129,7 @@ const ProfileScreen = ({navigation}) => {
         photoURL: url,
       });
       Toast.show('Your profile has been updated');
+      console.log(image);
     });
   };
 

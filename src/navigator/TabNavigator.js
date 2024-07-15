@@ -2,10 +2,11 @@
 /* eslint-disable react/no-unstable-nested-components */
 import React, {useEffect} from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {HomeScreen, FriendList} from '../screens';
+import {FriendList} from '../screens';
 import {TouchableOpacity, View, StyleSheet} from 'react-native';
 import {Icon} from 'react-native-elements';
 import {Text} from 'react-native';
+import TopTabNavigator from './TopTabNavigator';
 
 const TabNavigator = ({navigation}) => {
   const Tab = createBottomTabNavigator();
@@ -32,7 +33,7 @@ const TabNavigator = ({navigation}) => {
     <Tab.Navigator initialRouteName="Home">
       <Tab.Screen
         name="Home"
-        component={HomeScreen}
+        component={TopTabNavigator}
         options={{
           headerShown: false,
           tabBarLabel: ({focused}) => (
